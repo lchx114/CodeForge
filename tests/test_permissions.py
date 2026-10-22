@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 
 """五层权限系统的测试。"""
 from __future__ import annotations
@@ -14,7 +10,7 @@ from typing import Any, AsyncIterator
 import pytest
 import yaml
 
-from mewcode.agent import (
+from codeforge.agent import (
     Agent,
     ErrorEvent,
     LoopComplete,
@@ -26,9 +22,9 @@ from mewcode.agent import (
     TurnComplete,
     UsageEvent,
 )
-from mewcode.client import LLMClient
-from mewcode.conversation import ConversationManager
-from mewcode.permissions import (
+from codeforge.client import LLMClient
+from codeforge.conversation import ConversationManager
+from codeforge.permissions import (
     Decision,
     DangerousCommandDetector,
     PathSandbox,
@@ -40,8 +36,8 @@ from mewcode.permissions import (
     mode_decide,
     parse_rule,
 )
-from mewcode.tools import create_default_registry
-from mewcode.tools.base import StreamEnd, StreamEvent, TextDelta, ToolCallComplete
+from codeforge.tools import create_default_registry
+from codeforge.tools.base import StreamEnd, StreamEvent, TextDelta, ToolCallComplete
 
 # ===========================================================================
 # 第一层：DangerousCommandDetector（危险命令检测器）
@@ -148,7 +144,7 @@ class TestPathSandbox:
         assert ok
 
     def test_temp_dir_allowed(self) -> None:
-        tmp = Path(tempfile.gettempdir()) / "mewcode_test.txt"
+        tmp = Path(tempfile.gettempdir()) / "codeforge_test.txt"
         ok, _ = self.sandbox.check(str(tmp))
         assert ok
 
@@ -243,7 +239,7 @@ class TestRuleEngine:
 
     def test_append_local_rule(self) -> None:
         tmpdir = Path(tempfile.mkdtemp())
-        local_path = tmpdir / ".mewcode" / "permissions.local.yaml"
+        local_path = tmpdir / ".codeforge" / "permissions.local.yaml"
         engine = RuleEngine(local_rules_path=local_path)
         engine.append_local_rule(Rule(tool_name="Bash", pattern="git commit *", effect="allow"))
         assert local_path.exists()
@@ -291,28 +287,28 @@ class TestPermissionChecker:
         )
 
     def test_dangerous_command_denied(self) -> None:
-        from mewcode.tools.bash import Bash
+        from codeforge.tools.bash import Bash
         tool = Bash()
         d = self.checker.check(tool, {"command": "rm -rf /"})
         assert d.effect == "deny"
         assert "危险命令" in d.reason
 
     def test_write_path_outside_sandbox_asks(self) -> None:
-        from mewcode.tools.write_file import WriteFile
+        from codeforge.tools.write_file import WriteFile
         tool = WriteFile()
         d = self.checker.check(tool, {"file_path": "/etc/passwd", "content": "x"})
         assert d.effect == "ask"
         assert "沙箱" in d.reason
 
     def test_read_path_outside_sandbox_asks(self) -> None:
-        from mewcode.tools.read_file import ReadFile
+        from codeforge.tools.read_file import ReadFile
         tool = ReadFile()
         d = self.checker.check(tool, {"file_path": "/etc/passwd"})
         assert d.effect == "ask"
         assert "沙箱" in d.reason
 
     def test_read_tool_allowed_by_default_mode(self) -> None:
-        from mewcode.tools.read_file import ReadFile
+        from codeforge.tools.read_file import ReadFile
         tool = ReadFile()
         test_file = self.tmpdir / "hello.txt"
         test_file.write_text("hi")
@@ -320,40 +316,40 @@ class TestPermissionChecker:
         assert d.effect == "allow"
 
     def test_write_tool_asks_in_default_mode(self) -> None:
-        from mewcode.tools.write_file import WriteFile
+        from codeforge.tools.write_file import WriteFile
         tool = WriteFile()
         d = self.checker.check(tool, {"file_path": str(self.tmpdir / "new.txt"), "content": "hi"})
         assert d.effect == "ask"
 
     def test_bash_asks_in_default_mode(self) -> None:
-        from mewcode.tools.bash import Bash
+        from codeforge.tools.bash import Bash
         tool = Bash()
         d = self.checker.check(tool, {"command": "npm test"})
         assert d.effect == "ask"
 
     def test_plan_mode_asks_write(self) -> None:
-        from mewcode.tools.write_file import WriteFile
+        from codeforge.tools.write_file import WriteFile
         self.checker.mode = PermissionMode.PLAN
         tool = WriteFile()
         d = self.checker.check(tool, {"file_path": str(self.tmpdir / "x.txt"), "content": "hi"})
         assert d.effect == "ask"
 
     def test_bypass_mode_allows_all(self) -> None:
-        from mewcode.tools.bash import Bash
+        from codeforge.tools.bash import Bash
         self.checker.mode = PermissionMode.BYPASS
         tool = Bash()
         d = self.checker.check(tool, {"command": "npm test"})
         assert d.effect == "allow"
 
     def test_bypass_still_blocks_dangerous(self) -> None:
-        from mewcode.tools.bash import Bash
+        from codeforge.tools.bash import Bash
         self.checker.mode = PermissionMode.BYPASS
         tool = Bash()
         d = self.checker.check(tool, {"command": "rm -rf /"})
         assert d.effect == "deny"
 
     def test_rule_overrides_mode(self) -> None:
-        from mewcode.tools.bash import Bash
+        from codeforge.tools.bash import Bash
         tmpdir = Path(tempfile.mkdtemp())
         rules_file = tmpdir / "rules.yaml"
         rules_file.write_text(yaml.dump([
@@ -496,7 +492,7 @@ async def test_e2e_sandbox_outside_path_asks():
 async def test_e2e_rule_allows_git():
     """放行 git 命令的规则可以让其无需人工介入（HITL）直接通过。"""
     tmpdir = Path(tempfile.mkdtemp())
-    rules_file = tmpdir / ".mewcode" / "permissions.yaml"
+    rules_file = tmpdir / ".codeforge" / "permissions.yaml"
     rules_file.parent.mkdir(parents=True)
     rules_file.write_text(yaml.dump([{"rule": "Bash(git *)", "effect": "allow"}]))
 
@@ -674,7 +670,7 @@ class TestSandboxAutoAllowRespectsDenyAsk:
             mode=PermissionMode.DEFAULT,
             sandbox_enabled=True,
         )
-        from mewcode.tools.bash import Bash
+        from codeforge.tools.bash import Bash
         tool = Bash()
         d = checker.check(tool, {"command": "echo ok && rm -rf /"})
         assert d.effect == "deny"
@@ -692,7 +688,7 @@ class TestSandboxAutoAllowRespectsDenyAsk:
             mode=PermissionMode.DEFAULT,
             sandbox_enabled=True,
         )
-        from mewcode.tools.bash import Bash
+        from codeforge.tools.bash import Bash
         tool = Bash()
         d = checker.check(tool, {"command": "go test ./..."})
         assert d.effect == "allow"
@@ -710,7 +706,7 @@ class TestSandboxAutoAllowRespectsDenyAsk:
             mode=PermissionMode.DEFAULT,
             sandbox_enabled=True,
         )
-        from mewcode.tools.bash import Bash
+        from codeforge.tools.bash import Bash
         tool = Bash()
         d = checker.check(tool, {"command": "git push origin main"})
         assert d.effect == "ask"

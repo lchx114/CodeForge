@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 
 """Skill 系统的测试 —— 包括 parser、loader、executor 以及 LoadSkill 工具。"""
 from __future__ import annotations
@@ -13,15 +9,15 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from mewcode.skills.parser import (
+from codeforge.skills.parser import (
     SkillDef,
     SkillParseError,
     parse_frontmatter,
     parse_skill_file,
     substitute_arguments,
 )
-from mewcode.skills.loader import SkillLoader
-from mewcode.tools import ToolRegistry
+from codeforge.skills.loader import SkillLoader
+from codeforge.tools import ToolRegistry
 
 # ---------------------------------------------------------------------------
 # 辅助工具
@@ -178,7 +174,7 @@ class TestSkillLoader:
         assert "backend-interview" not in skills
 
     def test_project_overrides_builtin(self, tmp_path: Path) -> None:
-        skills_dir = tmp_path / ".mewcode" / "skills"
+        skills_dir = tmp_path / ".codeforge" / "skills"
         skills_dir.mkdir(parents=True)
         custom = skills_dir / "commit.md"
         custom.write_text(textwrap.dedent("""\
@@ -215,7 +211,7 @@ class TestSkillLoader:
         assert loader.get("nonexistent") is None
 
     def test_hot_reload(self, tmp_path: Path) -> None:
-        skills_dir = tmp_path / ".mewcode" / "skills"
+        skills_dir = tmp_path / ".codeforge" / "skills"
         skills_dir.mkdir(parents=True)
         f = skills_dir / "custom.md"
         f.write_text(textwrap.dedent("""\
@@ -241,7 +237,7 @@ class TestSkillLoader:
         assert "v2" in skill.prompt_body
 
     def test_hot_reload_fallback_on_error(self, tmp_path: Path) -> None:
-        skills_dir = tmp_path / ".mewcode" / "skills"
+        skills_dir = tmp_path / ".codeforge" / "skills"
         skills_dir.mkdir(parents=True)
         f = skills_dir / "custom.md"
         f.write_text(textwrap.dedent("""\
@@ -260,7 +256,7 @@ class TestSkillLoader:
         assert skill.description == "good"
 
     def test_directory_skill_detected(self, tmp_path: Path) -> None:
-        skills_dir = tmp_path / ".mewcode" / "skills"
+        skills_dir = tmp_path / ".codeforge" / "skills"
         skill_dir = skills_dir / "my-skill"
         skill_dir.mkdir(parents=True)
         skill_md = skill_dir / "SKILL.md"
@@ -282,7 +278,7 @@ class TestSkillLoader:
         assert loader.get_source_label("nonexistent") == "unknown"
 
     def test_malformed_file_skipped(self, tmp_path: Path) -> None:
-        skills_dir = tmp_path / ".mewcode" / "skills"
+        skills_dir = tmp_path / ".codeforge" / "skills"
         skills_dir.mkdir(parents=True)
         bad = skills_dir / "broken.md"
         bad.write_text("not valid frontmatter")
@@ -314,7 +310,7 @@ class TestSkillLoader:
 class TestLoadSkillTool:
     @pytest.mark.asyncio
     async def test_load_existing_skill(self) -> None:
-        from mewcode.tools.load_skill import LoadSkill, LoadSkillParams
+        from codeforge.tools.load_skill import LoadSkill, LoadSkillParams
 
         tool = LoadSkill()
         loader = MagicMock()
@@ -339,7 +335,7 @@ class TestLoadSkillTool:
 
     @pytest.mark.asyncio
     async def test_load_unknown_skill(self) -> None:
-        from mewcode.tools.load_skill import LoadSkill, LoadSkillParams
+        from codeforge.tools.load_skill import LoadSkill, LoadSkillParams
 
         tool = LoadSkill()
         loader = MagicMock()
@@ -356,7 +352,7 @@ class TestLoadSkillTool:
 
     @pytest.mark.asyncio
     async def test_not_initialized(self) -> None:
-        from mewcode.tools.load_skill import LoadSkill, LoadSkillParams
+        from codeforge.tools.load_skill import LoadSkill, LoadSkillParams
 
         tool = LoadSkill()
         result = await tool.execute(LoadSkillParams(name="test"))
@@ -366,7 +362,7 @@ class TestLoadSkillTool:
     @pytest.mark.asyncio
     async def test_fork_skill_runs_in_sub_agent(self) -> None:
         """fork 模式下 SOP 正文交给子 Agent，主对话只拿到最终结果。"""
-        from mewcode.tools.load_skill import LoadSkill, LoadSkillParams
+        from codeforge.tools.load_skill import LoadSkill, LoadSkillParams
 
         tool = LoadSkill()
         loader = MagicMock()
@@ -395,7 +391,7 @@ class TestLoadSkillTool:
     @pytest.mark.asyncio
     async def test_fork_skill_falls_back_without_executor(self) -> None:
         """宿主没有接入执行器时回退成 inline，工具仍然可用。"""
-        from mewcode.tools.load_skill import LoadSkill, LoadSkillParams
+        from codeforge.tools.load_skill import LoadSkill, LoadSkillParams
 
         tool = LoadSkill()
         loader = MagicMock()
@@ -419,7 +415,7 @@ class TestLoadSkillTool:
     @pytest.mark.asyncio
     async def test_inline_skill_does_not_fork(self) -> None:
         """inline 模式保持原样：返回 SOP 正文，不启子 Agent。"""
-        from mewcode.tools.load_skill import LoadSkill, LoadSkillParams
+        from codeforge.tools.load_skill import LoadSkill, LoadSkillParams
 
         tool = LoadSkill()
         loader = MagicMock()
@@ -443,7 +439,7 @@ class TestLoadSkillTool:
         executor.execute_fork.assert_not_awaited()
 
     def test_load_skill_is_read_only(self) -> None:
-        from mewcode.tools.load_skill import LoadSkill
+        from codeforge.tools.load_skill import LoadSkill
 
         tool = LoadSkill()
         assert tool.category == "read"
@@ -454,7 +450,7 @@ class TestLoadSkillTool:
 
 class TestAgentSkillIntegration:
     def test_env_context_does_not_include_active_skills(self) -> None:
-        from mewcode.prompts import build_environment_context
+        from codeforge.prompts import build_environment_context
 
         env = build_environment_context(
             "/test",
@@ -469,7 +465,7 @@ class TestAgentSkillIntegration:
         agent = MagicMock()
         agent.active_skills = {}
 
-        from mewcode.agent import Agent
+        from codeforge.agent import Agent
 
         real_agent = MagicMock(spec=Agent)
         real_agent.active_skills = {}

@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 
 """验证 /clear 命令正确重置所有会话级状态。"""
 from __future__ import annotations
@@ -11,10 +7,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from mewcode.commands.registry import CommandContext, UIController
-from mewcode.commands.handlers.clear import handle_clear
-from mewcode.conversation import ConversationManager
-from mewcode.memory.session import SessionManager
+from codeforge.commands.registry import CommandContext, UIController
+from codeforge.commands.handlers.clear import handle_clear
+from codeforge.conversation import ConversationManager
+from codeforge.memory.session import SessionManager
 
 
 class MockUI:

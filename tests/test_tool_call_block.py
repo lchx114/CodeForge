@@ -1,11 +1,7 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 
 from __future__ import annotations
 
-from mewcode.app import ToolCallBlock, _format_detail
+from codeforge.app import ToolCallBlock, _format_detail
 
 
 def test_format_detail_colors_edit_file_diff_lines():

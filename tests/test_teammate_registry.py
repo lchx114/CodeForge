@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 
 """队友 worker 进程的工具集测试。
 
@@ -13,12 +9,12 @@ from __future__ import annotations
 
 import pytest
 
-from mewcode.__main__ import _build_teammate_registry
+from codeforge.__main__ import _build_teammate_registry
 from pydantic import BaseModel
 
-from mewcode.teams.manager import TeamManager
-from mewcode.tools import ToolRegistry
-from mewcode.tools.base import Tool
+from codeforge.teams.manager import TeamManager
+from codeforge.tools import ToolRegistry
+from codeforge.tools.base import Tool
 
 
 @pytest.mark.asyncio
@@ -64,8 +60,8 @@ class _StubTool(Tool):
 
 def test_teammate_tools_block_team_management():
     """进程内队友从 Lead 的注册表过滤而来，团队成员管理工具不能继承过去。"""
-    from mewcode.agents.tool_filter import build_teammate_tools
-    from mewcode.teams.models import BackendType
+    from codeforge.agents.tool_filter import build_teammate_tools
+    from codeforge.teams.models import BackendType
 
     parent = ToolRegistry()
     for name in ["ReadFile", "Bash", "EditFile", "Agent", "TeamCreate", "TeamDelete"]:

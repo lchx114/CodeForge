@@ -1,11 +1,7 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 from __future__ import annotations
 
-from mewcode.conversation import Message, ToolResultBlock, ToolUseBlock
-from mewcode.conversation_pairing import INTERRUPTED_TOOL_RESULT, ensure_tool_pairing
+from codeforge.conversation import Message, ToolResultBlock, ToolUseBlock
+from codeforge.conversation_pairing import INTERRUPTED_TOOL_RESULT, ensure_tool_pairing
 
 
 def assistant_with_tool(tool_id: str) -> Message:

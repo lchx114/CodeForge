@@ -1,14 +1,10 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 
 """结构化消息协议：关闭协商与计划审批。"""
 
 import json
 
-from mewcode.teams import protocol
-from mewcode.teams.mailbox import MailboxMessage, create_message
+from codeforge.teams import protocol
+from codeforge.teams.mailbox import MailboxMessage, create_message
 
 
 class TestShutdownNegotiation:

@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 
 """Git Worktree 管理系统的测试（第 13 章）。"""
 from __future__ import annotations
@@ -15,13 +11,13 @@ from pathlib import Path
 
 import pytest
 
-from mewcode.config import WorktreeConfig, load_config
-from mewcode.worktree.changes import count_worktree_changes, has_worktree_changes
-from mewcode.worktree.integration import build_worktree_notice, generate_worktree_name
-from mewcode.worktree.manager import WorktreeError, WorktreeManager
-from mewcode.worktree.models import WorktreeSession
-from mewcode.worktree.session import load_worktree_session, save_worktree_session
-from mewcode.worktree.slug import flatten_slug, validate_slug
+from codeforge.config import WorktreeConfig, load_config
+from codeforge.worktree.changes import count_worktree_changes, has_worktree_changes
+from codeforge.worktree.integration import build_worktree_notice, generate_worktree_name
+from codeforge.worktree.manager import WorktreeError, WorktreeManager
+from codeforge.worktree.models import WorktreeSession
+from codeforge.worktree.session import load_worktree_session, save_worktree_session
+from codeforge.worktree.slug import flatten_slug, validate_slug
 
 # =========================================================================
 # A. Slug 校验

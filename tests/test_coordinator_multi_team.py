@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 
 # 回归测试：Coordinator Mode 的工具限制在多 Team 场景下保持稳定。
 # 模式由配置在启动时决定，建团队和拆团队都不改变工具集，
@@ -13,13 +9,13 @@ import asyncio
 import shutil
 from unittest.mock import MagicMock
 
-from mewcode.agents.tool_filter import apply_coordinator_filter
-from mewcode.teams.manager import TeamManager
-from mewcode.teams.models import resolve_team_dir
-from mewcode.tools.team_create import TeamCreateTool, TeamCreateParams
-from mewcode.tools.team_delete import TeamDeleteTool, TeamDeleteParams
-from mewcode.tools import ToolRegistry
-from mewcode.tools.base import Tool, ToolResult
+from codeforge.agents.tool_filter import apply_coordinator_filter
+from codeforge.teams.manager import TeamManager
+from codeforge.teams.models import resolve_team_dir
+from codeforge.tools.team_create import TeamCreateTool, TeamCreateParams
+from codeforge.tools.team_delete import TeamDeleteTool, TeamDeleteParams
+from codeforge.tools import ToolRegistry
+from codeforge.tools.base import Tool, ToolResult
 
 
 class DummyTool(Tool):

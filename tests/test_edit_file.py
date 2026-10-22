@@ -1,7 +1,3 @@
-# 来源：公众号@小林coding
-# 后端八股网站：xiaolincoding.com
-# Agent网站：xiaolinnote.com
-# 简历模版：jianli.xiaolinnote.com
 
 from __future__ import annotations
 
@@ -9,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from mewcode.tools.edit_file import EditFile, Params
+from codeforge.tools.edit_file import EditFile, Params
 
 
 @pytest.mark.asyncio

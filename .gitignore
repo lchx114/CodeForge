@@ -10,6 +10,7 @@ dist/
 build/
 .idea/
 .vscode/
+.codeforge/
 .mewcode/
 .claude/
 CLAUDE.md
